@@ -40,14 +40,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
 
 # Copy the default Nginx configuration file
-COPY docker_files/nginx/default.conf /etc/nginx/conf.d/default.conf
+# COPY docker_files/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose necessary ports
 EXPOSE 80 9000
 EXPOSE 9100
 
 # Define environment variable
-ENV NAME cosproeight
+ENV NAME cosproeleven
 
 # Start Nginx and PHP-FPM
 CMD ["sh", "-c", "nginx -g 'daemon off;' & php-fpm"]
