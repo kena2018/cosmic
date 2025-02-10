@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cosproeight-cosmicgway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cosproeight-cosmicgway
+  template:
+    metadata:
+      annotations:
+        redeploy: 'true'
+      labels:
+        app: cosproeight-cosmicgway
+    spec:
+      containers:
+      - image: 672072155362.dkr.ecr.us-west-2.amazonaws.com/cosrepoeight:latest
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/welcome
+            port: 9100
+          initialDelaySeconds: 180
+          periodSeconds: 5
+        name: cosmiccontainer
+        ports:
+        - containerPort: 9100
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cosmicgway-service
+spec:
+  ports:
+  - port: 9100
+    protocol: TCP
+    targetPort: 9100
+  selector:
+    app: cosproeight-cosmicgway
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: 'true'
+  name: my-aws-ingress-class
+spec:
+  controller: ingress.k8s.aws/alb
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
+    alb.ingress.kubernetes.io/healthcheck-path: /api/v1/welcome
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/load-balancer-name: cosproeight-alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: subnet-020f5ad27b951039c, subnet-0a3f7a1ad9e4b643f
+    alb.ingress.kubernetes.io/success-codes: 200-404
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+  labels:
+    app: app-cosproeight
+  name: ingress-cosproeight
+spec:
+  defaultBackend:
+    service:
+      name: cosmicgway-service
+      port:
+        number: 9100
+  ingressClassName: my-aws-ingress-class
