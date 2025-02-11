@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone the common utility folder from the GitHub repository
-RUN git clone git@github.com:kena2018/cosmic.git /var/www/cosmic
+RUN git clone https://github.com/kena2018/cosmicerp.git /var/www/cosmic
 
 # Copy application files to the container
 COPY . /var/www
@@ -31,7 +31,7 @@ COPY . /var/www
 RUN chown -R www-data:www-data /var/www
 
 # Set the working directory to the application folder
-WORKDIR /var/www/cosmic/app
+WORKDIR /var/www/cosmicerp/app
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -40,14 +40,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
 
 # Copy the default Nginx configuration file
-# COPY docker_files/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker_files/docker_files/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose necessary ports
 EXPOSE 80 9000
 EXPOSE 9100
 
 # Define environment variable
-ENV NAME cosproeleven
+ENV NAME cosprotwelve
 
 # Start Nginx and PHP-FPM
 CMD ["sh", "-c", "nginx -g 'daemon off;' & php-fpm"]
